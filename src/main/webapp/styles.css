@@ -1,0 +1,107 @@
+@charset "UTF-8";
+
+/* The styles for the elements */
+body { 
+    font-family: 'Arial, sans-serif';
+    font-size: 85%;
+    margin-left: 2em;
+    margin-right: 2em;
+    width: 400px;
+}
+h1 {     
+    font-size: 140%;
+    color: teal;
+    margin-bottom: .5em;    
+}
+label {
+    float: left;
+    width: 7em;
+    margin-bottom: 0.5em;
+    font-weight: bold;
+}
+
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type="text"], input[type="email"], input[type="number"] {  /* An attribute selector */
+    width: 15em;
+    margin-left: 0.5em;    
+    margin-bottom: 0.5em;
+}
+
+br {
+    clear: both;
+}
+
+#quantity {
+    width: 2em;
+}
+
+header {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+header .your__cart--btn {
+    cursor: pointer;
+}
+
+/* The styles for the tables */
+table {
+    border: 1px solid black;
+    border-collapse: collapse;
+    width: 50em;
+}
+th, td {
+    border: 1px solid black;
+    text-align: left;
+    padding: .5em;
+}
+.pad_top {
+    padding-top: 0.25em;
+}
+.right {
+    text-align: right;
+}
+
+.btn {
+	width: 100px;
+	padding: 0.8rem;
+    border: none;
+    cursor: pointer;
+    transition: .25s ease;
+}
+
+.btn > a {
+    font-weight: bold;
+    color: #fff;
+    text-decoration: none;
+}
+
+.btn__wrapper {
+    margin-top: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+}
+
+.return__btn {
+    background: rgb(255, 0, 0);
+}
+
+.return__btn:hover {
+    background: rgb(185, 0, 0);
+}
+
+.next__btn {
+    background: rgb(255, 174, 0);
+}
+
+.next__btn:hover {
+    background: rgb(195, 136, 10);
+}
