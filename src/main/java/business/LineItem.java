@@ -6,8 +6,18 @@ import java.text.NumberFormat;
 public class LineItem implements Serializable {
     private Product product;
     private int quantity;
+    private double discount = 0;
 
-    public LineItem() {}
+    public double getDiscount() {
+        return discount;
+    }
+
+    public void setDiscount(double discount) {
+        this.discount = discount;
+    }
+
+    public LineItem() {
+    }
 
     public void setProduct(Product p) {
         product = p;
@@ -26,7 +36,7 @@ public class LineItem implements Serializable {
     }
 
     public double getTotal() {
-        double total = product.getPrice() * quantity;
+        double total = product.getPrice() * quantity * (100 - this.discount) / 100;
         return total;
     }
 

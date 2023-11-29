@@ -6,7 +6,7 @@ import jakarta.servlet.http.*;
 import java.util.ArrayList;
 
 import data.ProductIO;
-import business.Product;
+import business.*;
 
 public class ProductsServlet extends HttpServlet {
     @Override
@@ -16,7 +16,7 @@ public class ProductsServlet extends HttpServlet {
 
         String path = getServletContext().getRealPath("/WEB-INF/products.txt");
         ArrayList<Product> products = ProductIO.getProducts(path);
-        System.out.println(products.get(1).getCode());
+        System.out.println(products.get(1).getDescription());
         session.setAttribute("products", products);
 
         String url = "/index.jsp";

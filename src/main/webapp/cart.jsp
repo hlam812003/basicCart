@@ -34,6 +34,7 @@
               <form action="" method="post">
                 <input type="hidden" name="productCode" value="<c:out value='${item.product.code}'/>">
                 <input type="hidden" name="quantity" value="0">
+                <input type="hidden" name="action" value="remove">
                 <input type="submit" value="Remove Item">
               </form>
             </td>
@@ -46,9 +47,10 @@
     <p><b>To change the quantity</b>, enter the new quantity 
       and click on the Update button.</p>
       
-    <form action="applyCoupon" method="post">
+    <form action="cart" method="post">
         <label for="couponCode">Have a coupon?</label>
         <input type="text" id="couponCode" name="couponCode" placeholder="Enter coupon code">
+        <input type="hidden" name="action" value="applyCoupon">
         <input type="submit" value="Apply">
     </form>
 
