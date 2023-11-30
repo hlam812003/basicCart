@@ -90,23 +90,38 @@ public class CartServlet extends HttpServlet {
                     getServletContext().getRealPath("/WEB-INF/coupons.txt"));
 
             if (discount > 0) {
-                cart.setDiscount(discount); // Áp dụng giảm giá
-
+                cart.setDiscount(discount); // Apply discount
                 session.setAttribute("cart", cart);
-                request.setAttribute("couponMessage", "Mã giảm giá được áp dụng thành công!");
+                session.setAttribute("appliedCouponCode", couponCode); // Save the applied coupon code
+                request.setAttribute("couponMessage", "Coupon code applied successfully!");
             } else {
-                request.setAttribute("couponMessage", "Mã giảm giá không hợp lệ.");
+                request.setAttribute("couponMessage", "Invalid coupon code.");
             }
         } else {
-            request.setAttribute("couponMessage", "Lỗi: Không tìm thấy giỏ hàng hoặc không nhập mã giảm giá.");
+            request.setAttribute("couponMessage", "Error! Please enter a coupon code");
+        }
+
+        // response.sendRedirect(request.getContextPath() + "/cart");
+        String url = "/cart.jsp";
+        RequestDispatcher dispatcher = getServletContext().getRequestDispatcher(url);
+        dispatcher.forward(request, response);
+    }
+
+    private void removeCoupon(HttpServletRequest request, HttpServletResponse response)
+        throws ServletException, IOException {
+        HttpSession session = request.getSession();
+        Cart cart = (Cart) session.getAttribute("cart");
+
+        if (cart != null) {
+            cart.setDiscount(0); // Reset discount
+            session.removeAttribute("appliedCouponCode"); // Remove the saved coupon code
         }
 
         response.sendRedirect(request.getContextPath() + "/cart");
-
     }
 
     private void removeItem(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
+        throws ServletException, IOException {
         String productCode = request.getParameter("productCode");
         ServletContext sc = getServletContext();
 
@@ -118,15 +133,24 @@ public class CartServlet extends HttpServlet {
 
         HttpSession session = request.getSession();
         Cart cart;
-        final Object lock = request.getSession().getId().intern();
-        synchronized (lock) {
+        synchronized (request.getSession().getId().intern()) {
             cart = (Cart) session.getAttribute("cart");
         }
 
-        cart.removeItem(lineItem);
+        if (cart != null) {
+            cart.removeItem(lineItem);
+    
+            // After removing the item, check if the cart is empty
+            if (cart.getCount() == 0) {
+                cart.setDiscount(0); // Reset discount
+                session.removeAttribute("couponMessage"); // Remove any coupon messages
+                session.removeAttribute("appliedCouponCode"); // Remove the applied coupon code
+            }
+    
+            session.setAttribute("cart", cart);
+        }
 
         response.sendRedirect(request.getContextPath() + "/cart");
-        return; // don't forget this!
     }
 
     @Override
@@ -140,7 +164,6 @@ public class CartServlet extends HttpServlet {
         System.out.println(action);
 
         if (action.equals("add")) {
-            System.out.println("heere");
             this.add(request, response);
             return;
         } else if (action.equals("updateQuantity")) {
@@ -148,6 +171,9 @@ public class CartServlet extends HttpServlet {
             return;
         } else if (action.equals("applyCoupon")) {
             this.applyCoupon(request, response);
+            return;
+        } else if (action.equals("removeCoupon")) {
+            this.removeCoupon(request, response);
             return;
         } else if (action.equals("remove")) {
             this.removeItem(request, response);
@@ -217,7 +243,19 @@ public class CartServlet extends HttpServlet {
             url = "/cart.jsp";
 
         } else if (action.equals("checkout")) {
-            url = "/checkout.jsp";
+            // url = "/checkout.jsp";
+            HttpSession session = request.getSession();
+            Cart cart = (Cart) session.getAttribute("cart");
+    
+            // Check if cart is not null and has items
+            if (cart != null && cart.getCount() > 0) {
+                url = "/checkout.jsp"; // Proceed to checkout if cart has items
+            } else {
+                // If cart is empty, set an error message and redirect to cart page
+                // request.setAttribute("checkoutError", "Your cart is empty. Please add at least 1 item before checking out.");
+                url = "/cart.jsp";
+            }
+
         } else if (action.equals("completeCheckout")) {
             String customerName = request.getParameter("customerName");
             String email = request.getParameter("email");
@@ -255,28 +293,7 @@ public class CartServlet extends HttpServlet {
             HttpSession session = request.getSession();
             session.removeAttribute("cart");
             url = "/index.jsp";
-        } else if (action.equals("applyCoupon")) {
-            String couponCode = request.getParameter("couponCode");
-            HttpSession session = request.getSession();
-            Cart cart = (Cart) session.getAttribute("cart");
-
-            if (cart != null && couponCode != null && !couponCode.trim().isEmpty()) {
-                double discount = CouponIO.getCouponDiscount(couponCode,
-                        getServletContext().getRealPath("/WEB-INF/coupons.txt"));
-
-                if (discount > 0) {
-                    cart.applyDiscount(discount); // Áp dụng giảm giá
-                    session.setAttribute("cart", cart);
-                    request.setAttribute("couponMessage", "Mã giảm giá được áp dụng thành công!");
-                } else {
-                    request.setAttribute("couponMessage", "Mã giảm giá không hợp lệ.");
-                }
-            } else {
-                request.setAttribute("couponMessage", "Lỗi: Không tìm thấy giỏ hàng hoặc không nhập mã giảm giá.");
-            }
-
-            url = "/cart.jsp";
-        }
+        } 
 
         sc.getRequestDispatcher(url)
                 .forward(request, response);

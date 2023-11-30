@@ -22,6 +22,7 @@
                 <td class="right">${product.priceCurrencyFormat}</td>
                 <td>
                     <form action="cart" method="post">
+                        <input type="hidden" name="action" value="add">
                         <input type="hidden" name="productCode" value="<c:out value='${product.code}'/>">
                         <input type="submit" value="Add To Cart">
                     </form>
